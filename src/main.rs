@@ -33,6 +33,11 @@ fn main() {
     let dll_base_address = get_dll_address("kERnel32.DLL".to_string(), teb).unwrap();
     println!("kernel32.dll base address: {:?}", dll_base_address);
 
+    //locate ntdll.dll
+    println!("locating ntdll.dll as an example");
+    let ntdll_base_address = get_dll_address("ntdll.dll".to_string(), teb).unwrap();
+    println!("ntdll.dll base address: {:?}", ntdll_base_address);
+
     // Load user32.dll manually
     println!("loading user32.dll");
     let user32_handle = load_dll("user32.dll", dll_base_address);

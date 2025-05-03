@@ -540,20 +540,18 @@ pub fn list_all_dlls(teb: *const TEB) -> Vec<(String, *mut c_void)> {
                         container_of!(list_entry, LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks);
                     loop {
                         let dll_base = (*current_entry).DllBase;
-                        let dll_name_in_memory = std::slice::from_raw_parts(
-                            (*current_entry).FullDllName.Buffer,
-                            (*current_entry).FullDllName.Length as usize / 2,
-                        )
-                        .as_ptr();
-                        let dll_name_len = (*current_entry).FullDllName.Length as usize / 2;
+                        let buffer = (*current_entry).FullDllName.Buffer;
+                        let length = (*current_entry).FullDllName.Length as usize / 2;
 
-                        // Convert the DLL name to a Rust string
-                        let dll_name_in_memory = String::from_utf16_lossy(
-                            std::slice::from_raw_parts(dll_name_in_memory, dll_name_len),
-                        );
-
-                        // Add the DLL name and base address to the list
-                        dll_list.push((dll_name_in_memory, dll_base));
+                        // Skip if buffer is null or length is 0
+                        if !buffer.is_null() && length > 0 {
+                            // Ensure the buffer is properly aligned for u16
+                            if (buffer as usize) % std::mem::align_of::<u16>() == 0 {
+                                let dll_name_in_memory = std::slice::from_raw_parts(buffer, length);
+                                let dll_name = String::from_utf16_lossy(dll_name_in_memory);
+                                dll_list.push((dll_name, dll_base));
+                            }
+                        }
 
                         // Move to the next entry
                         let next_entry = (*current_entry).InMemoryOrderLinks.Flink;
