@@ -6,11 +6,6 @@
 use std::arch::asm;
 use std::ffi::c_void;
 
-#[macro_use]
-extern crate litcrypt;
-
-use_litcrypt!();
-
 #[repr(C)]
 pub struct IMAGE_DATA_DIRECTORY {
     pub VirtualAddress: u32,
@@ -577,7 +572,7 @@ pub fn load_dll(dll_name: &str, kernel32_base: *const c_void) -> HMODULE {
         //let kernel32_base = get_dll_address("kernel32.dll".to_string(), get_teb()).unwrap();
 
         // Get the address of LoadLibraryA function
-        let load_library_a = get_function_address(kernel32_base, &lc!("LoadLibraryA")).unwrap();
+        let load_library_a = get_function_address(kernel32_base, "LoadLibraryA").unwrap();
         let load_library_a: extern "system" fn(*const i8) -> HMODULE =
             std::mem::transmute(load_library_a);
 

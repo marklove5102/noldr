@@ -18,4 +18,3 @@ strip = true        # Automatically strip symbols from the binary.
 
 [dependencies]
 memoffset = "0.9.1"
-litcrypt = "0.3.0"

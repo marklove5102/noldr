@@ -6,11 +6,6 @@ use noldr::{get_dll_address, get_function_address, list_all_dlls, load_dll};
 use noldr::get_teb;
 use noldr::HMODULE;
 
-#[macro_use]
-extern crate litcrypt;
-
-use_litcrypt!();
-
 fn main() {
     // Get the Thread Environment Block (TEB)
     let teb = get_teb();
@@ -60,16 +55,16 @@ fn main() {
 
     // Check if user32.dll was successfully loaded
     if user32_handle != HMODULE::default() {
-        println!("{}", &lc!("locating MessageBoxA in user32.dll as an example"));
+        println!("{}", "locating MessageBoxA in user32.dll as an example");
         
         // Get the address of MessageBoxA function
         let message_box_a = unsafe {
-            let function_address = get_function_address(user32_handle.0 as *mut _, &lc!("MessageBoxA")).unwrap();
+            let function_address = get_function_address(user32_handle.0 as *mut _, "MessageBoxA").unwrap();
             // Convert the function address to a callable function pointer
             std::mem::transmute::<_, extern "system" fn(*mut c_void, *const i8, *const i8, u32) -> i32>(function_address)
         };
 
-        print!("{}", &lc!("MessageBoxA address: "));
+        print!("{}", "MessageBoxA address: ");
         println!("{:?}", message_box_a as *const ());
 
         // Call MessageBoxA to display a message
